@@ -1,8 +1,9 @@
 import './App.css'
+import UserManagement from './components/UserManagement/UserManagement'
 
 function App() {
   return (
-    null
+    <UserManagement />
   )
 }
 
