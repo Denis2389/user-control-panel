@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-// import styles from './UserManagement.module.css'
+import styles from './UserManagement.module.css'
 
 interface Users {
     id: number;
@@ -45,46 +45,51 @@ const UserManagement: React.FC = () => {
         return <div>Loading...</div>
     }
 
-    const handleDeleteUser = (id:number) => {
+    const handleDeleteUser = (id: number) => {
        const updatedUser = users.filter((user) => user.id !== id)
         setUsers(updatedUser);
         setFilteredUsers(updatedUser);
     }
     
     const handleUpdateUser = (id: number, newName: string) => {
-        const editUsers = users.map((user) => user.id === id ? { ...user, name: newName } : user)
+        const editUsers = users.map((user) =>
+          user.id === id ? { ...user, name: newName } : user
+        );
         setUsers(editUsers);
         setFilteredUsers(editUsers);
     }
 
     const handleEditUser = (user: Users) => {
-        console.log('User to edit', user)
-        console.log('isModal state:', isModal);
-
         setEditingUser(user);
         setIsModal(true);
     }
 
-    const handleSaveEdit = (newName: string) => {
+    const handleSaveEdit = () => {
       if (editingUser) {
-        handleUpdateUser(editingUser.id, newName);
+        handleUpdateUser(editingUser.id, editingUser.name);
         setIsModal(false)
         setEditingUser(null)
       }
+    }
+
+    const handleCancelEditi = () => {
+        setIsModal(false)
+        setEditingUser(null)
     }
 
     return (
       <div>
         <h1>Panel user management</h1>
         <input
+        className={styles.inputSearchName}
           type="text"
-          placeholder="Write name or surname.."
+          placeholder="Write name.."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <ul>
+        <ul className={styles.list}>
           {filteredUsers.map((user) => (
-            <li key={user.id}>
+            <li className={styles.item} key={user.id}>
               {user.name}
               <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
               <button onClick={() => handleEditUser(user)}>Edit</button>
@@ -92,24 +97,21 @@ const UserManagement: React.FC = () => {
           ))}
         </ul>
         {isModal && editingUser && (
-          <div>
+          <div className={styles.editWrapper}>
             <h2>Edit user</h2>
             <input
+            placeholder='Write name..'
+            className={styles.inputEditName}
               type="text"
-              value={editingUser.name || ''}
-              onChange={(e) => {
-                if (editingUser) {
-                    setEditingUser((prevUser) => ({
-                        ...prevUser!,
-                        name: e.target.value
-                    }))
-                }
-              }}
+              value={editingUser.name || ""}
+              onChange={(e) =>
+                setEditingUser((prevUser) =>
+                  prevUser ? { ...prevUser, name: e.target.value } : null
+                )
+              }
             />
-            <button onClick={() => handleSaveEdit(editingUser.name)}>
-              Save
-            </button>
-            <button onClick={() => setIsModal(false)}>Cancel</button>
+            <button onClick={handleSaveEdit}>Save</button>
+            <button onClick={handleCancelEditi}>Cancel</button>
           </div>
         )}
       </div>
@@ -117,9 +119,3 @@ const UserManagement: React.FC = () => {
 }
 
 export default UserManagement
-
-// 2. Простая панель управления пользователями
-// Загрузите список пользователей с API (например, JSONPlaceholder).
-// Реализуйте функционал поиска и фильтрации по имени.
-// Добавьте возможность удаления и редактирования данных пользователя.
-// Потренируйтесь в использовании компонентов модальных окон для редактирования. 
